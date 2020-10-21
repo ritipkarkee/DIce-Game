@@ -1,0 +1,158 @@
+<!Doctype html>
+<html>
+<head>
+
+    <meta charset="UTF-8">
+    <title>Dice Game by Ritip Karkee</title>
+    <link rel="stylesheet" type="text/css" href="styles/styles.css">
+</head>
+<body>
+    <div class="row" align="center">
+        <div class="col-4">
+            <h3>Your Dice</h3>
+            <img src="diceimages/m1.png" width="100" height="100" alt="roll: 1" id="mydice1" />
+            <img src="diceimages/m1.png" width="100" height="100" alt="roll: 1" id="mydice2" />
+        </div>
+
+        <div class="col-4">
+            <h3>Opponent's Dice</h3>
+            <img src="diceimages/o1.png" width="100" height="100" alt="roll: 1" id="opponentdice1" />
+            <img src="diceimages/o1.png" width="100" height="100" alt="roll: 1" id="opponentdice2" />
+            <div id="opponent_score"></div>
+        </div>
+
+        <div class="col-4" align="center">
+            <img src="diceimages/goodluck.png" width="150" height="150" alt="roll: 1" id="message" /><br>
+            <button class="roll" onClick="throwdice()">Roll Dice</button>
+            <button class="quit" onClick="quitgame()">Quit Game</button>
+            <div>
+                <h3>
+                    Total Points
+                </h3>
+                <div>Player points:<div id="playerPoints"></div></div>
+                <div>Opponent points:<div id="opponentPoints"></div></div>
+                <div>Won:<h2 id="won"></h2></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // var sides = ["m1.png", "m2.png", "d3.png", "d4.png", "d5.png", "d6.png"];
+        var side_alt = ["roll: 1", "roll: 2", "roll: 3", "roll: 4", "roll: 5", "roll: 6"];
+
+        var totalPlayerpoints = 0, totalOpponentpoints = 0
+
+        //When user clicks on Quit, first show the result and then quite the game
+        //Here Quiting the game, reloaded the page
+        function quitgame() {
+            var confirmMessage = "";
+            if (totalPlayerpoints > totalOpponentpoints) {
+                document.getElementById("won").innerHTML = "You won";
+                confirmMessage = "You have WON the game. Are you sure you want to Quit the game?";
+            }
+            else {
+                document.getElementById("won").innerHTML = "You lose";
+                confirmMessage = "You have LOSE the game. Are you sure you want to Quit the game?"
+            }
+
+            if (confirm(confirmMessage)) {
+                // Refresh the page
+                location.reload();
+            }
+
+
+        }
+
+        function throwdice() {
+            // Create Random Number between 1 and 6
+            var rand1 = Math.round(Math.random() * 5) + 1;
+            var rand2 = Math.round(Math.random() * 5) + 1;
+            var rand3 = Math.round(Math.random() * 5) + 1;
+            var rand4 = Math.round(Math.random() * 5) + 1;
+
+            // Set Images src
+            document.getElementById("mydice1").src = "diceimages/m" + rand1 + ".png";
+            document.getElementById("mydice2").src = "diceimages/m" + rand2 + ".png";
+            document.getElementById("opponentdice1").src = "diceimages/o" + rand3 + ".png";
+            document.getElementById("opponentdice2").src = "diceimages/o" + rand4 + ".png";
+
+            //Set Images alt
+            document.getElementById("mydice1").alt = side_alt[rand1];
+            document.getElementById("mydice2").alt = side_alt[rand2];
+            document.getElementById("opponentdice1").alt = side_alt[rand3];
+            document.getElementById("opponentdice2").alt = side_alt[rand4];
+
+            who_won(rand1, rand2, rand3, rand4);
+        }
+
+        function who_won(rand1, rand2, rand3, rand4) {
+            let player_points = rand1 + rand2;
+            let opponent_points = rand3 + rand4;
+
+            //if both players have rolled a double, player with higher double, will get double points
+            if (rand1 === rand2 && rand3 === rand4) {
+                if (rand1 + rand2 > rand3 + rand4) {
+                    player_points = player_points * 2;
+                }
+                else {
+                    opponent_points = opponent_points * 2;
+                }
+            }
+            //if player has rolled a double and has the highest score, they will get double points
+            else if (rand1 === rand2 && rand3 != rand4) {
+                if (rand1 + rand2 > rand3 + rand4) {
+                    player_points = player_points * 2;
+                }
+            }
+            // if opponent has rolled a double and has the highest score, they will get double points
+            else if (rand1 != rand2 && rand3 === rand4) {
+                if (rand1 + rand2 < rand3 + rand4) {
+                    opponent_points = opponent_points * 2;
+                }
+            }
+            //end of snippet of code
+
+            let result = winner(player_points, opponent_points);
+            document.getElementById("message").innerHTML = result;
+
+            //here always show the updated points first and then declare the result
+            document.getElementById("playerPoints").innerHTML = totalPlayerpoints;
+            document.getElementById("opponentPoints").innerHTML = totalOpponentpoints;
+
+            //here check that if any of the user reches to 100 points then he is winner
+            if (totalPlayerpoints >= 100 || totalOpponentpoints >= 100) {
+                if (totalPlayerpoints > totalOpponentpoints)
+                    document.getElementById("won").innerHTML = "You won";
+                else
+                    document.getElementById("won").innerHTML = "You lose";
+            }
+            
+        }
+
+        //If Statements
+        function winner(player, opponent) {
+            if (player < opponent) {
+
+                totalOpponentpoints += opponent;
+                //updating points for opponent
+                console.log(totalOpponentpoints)
+                document.getElementById("message").src = 'diceimages/youlose.jpg';
+                return
+
+            }
+            if (opponent < player) {
+
+                totalPlayerpoints +=  player;
+                //updating points for player
+                console.log(totalPlayerpoints)
+                document.getElementById("message").src = 'diceimages/youwin.jpg';
+                return
+            }
+            if (player == opponent) {
+                document.getElementById("message").src = 'diceimages/tie.gif';
+                return
+            }
+        }
+    </script>
+</body>
+</html>
